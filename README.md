@@ -1,8 +1,16 @@
 # CRI_Bigtop_Stack
 Configuration to deploy Apache Bigtop
 
-1. Initial OS config: 
-1. Install dependencies
+## Initial OS config: 
+1. Enable PowerTools repo
+1. Install dependencies:
+
+   ```
+      dnf install epel-release vim git strace lsof java ruby puppet \
+          wget yum-utils createrepo createrepo whois \
+          R-core-devel R-devel openblas-devel httpd python3 python3-devel \
+   ```
+
 1. Configure firewall as needed - internal net in trusted zone, public allow 80,443, and 22
 1. Generate certificates (this example uses certbot)
 1. Ensure https redirect is in place as usual
@@ -22,3 +30,9 @@ pt/bigtop/bigtop-3.1.0/bigtop-deploy/puppet/manifests |& tee puppet_apply.log`
 
 1. Apply httpd proxy config for zeppelin
 1. DO NOT OPEN THE FIREWALL TO ANTHING ELSE
+1. If you wish to use R within Zeppelin:
+
+   ```ln -s /usr/bin/python3 /usr/bin/python```
+   ```pip3 install jupyter-client grpcio protobuf```
+   And also install IRKernel via R and CRAN, then somehow convince the jupyter installation to use it correctly.
+
