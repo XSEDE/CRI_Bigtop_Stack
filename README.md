@@ -57,6 +57,7 @@ pt/bigtop/bigtop-3.1.0/bigtop-deploy/puppet/manifests |& tee puppet_apply.log`
 
 1. Apply httpd proxy config for zeppelin
 1. DO NOT OPEN THE FIREWALL TO ANTHING ELSE
+1. Change the zeppelin default password - in `/opt/bigtop/bigtop-3.1.0/bigtop-deploy/puppet/modules/zeppelin/manifsts/SOMETHING` OR better yet, do this in your site.yaml and ACL-protect it to within an inch of its life.
 1. If you wish to use R within Zeppelin:
 
    ```ln -s /usr/bin/python3 /usr/bin/python```
