@@ -1,5 +1,5 @@
 # CRI_Bigtop_Stack
-Configuration to deploy Apache Bigtop
+Configuration to deploy Apache Bigtop on Rocky Linux 8
 
 ## Initial OS config: 
 1. Enable PowerTools repo
@@ -7,8 +7,8 @@ Configuration to deploy Apache Bigtop
 
    ```
       dnf install epel-release vim git strace lsof java ruby puppet \
-          wget yum-utils createrepo createrepo whois \
-          R-core-devel R-devel openblas-devel httpd python3 python3-devel \
+          wget yum-utils createrepo whois nfs-utils nfs-server bind-utils \
+          R-core-devel R-devel openblas-devel httpd python3 python3-devel 
    ```
 
 1. Configure firewall as needed - internal net in trusted zone, public allow 80,443, and 22
@@ -25,6 +25,12 @@ Configuration to deploy Apache Bigtop
    ```
 
 1. Ensure hostname is resolvable and matches host defined in site.yaml
+1. Ensure /opt/bigtop is entered into /etc/exports for NFS-sharing across the cluster
+
+   ```
+     /opt/bigtop  10.0.0.0/24(rw,no_subtree_check,no_root_squash)
+   ```
+
 1. Edit params in site.yaml appropriately
 
    (ensure desired modules are included, these can be compared against the
@@ -44,13 +50,23 @@ Configuration to deploy Apache Bigtop
   
    ```
    cp -r /opt/bigtop/bigtop-3.1.0/bigtop-deploy/puppet/hieradata/ /etc/puppetlabs/puppet/
+   cp -r /opt/bigtop/bigtop-3.1.0/bigtop-deploy/puppet/hiera.yaml /etc/puppetlabs/puppet/
+   ```
+
+1. DOUBLE CHECK THAT `/etc/puppetlabs/puppet/hiera.yaml` REFLECTS A CORRECT PATH FOR THE PUPPET CONFIG DIR
+
+1. Generate the necessary puppet modules via *gradle*
+
+   ```
+   cd /opt/bigtop/bigtop-3.1.0/
+   ./gradlew toolchain-puppetmodules
    ```
 
 1. Overwrite the default config with *this* site.yaml file WHICH YOU HAVE ALREADY EDITED, RIGHT?
 
    ```cp ./site.yaml /etc/puppetlabs/puppet/hieradata/site.yaml```
     
-1. Puppet apply! 
+1. Puppet apply! (do this in /tmp to avoid a particular error)
  
    `puppet apply -d --modulepath="/opt/bigtop/bigtop-3.1.0/bigtop-deploy/puppet/modules:/etc/puppetlabs/code/modules/" /o
 pt/bigtop/bigtop-3.1.0/bigtop-deploy/puppet/manifests |& tee puppet_apply.log`
