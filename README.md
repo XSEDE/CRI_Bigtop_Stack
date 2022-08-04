@@ -68,8 +68,7 @@ Configuration to deploy Apache Bigtop on Rocky Linux 8
     
 1. Puppet apply! (do this in /tmp to avoid a particular error)
  
-   `puppet apply -d --modulepath="/opt/bigtop/bigtop-3.1.0/bigtop-deploy/puppet/modules:/etc/puppetlabs/code/modules/" /o
-pt/bigtop/bigtop-3.1.0/bigtop-deploy/puppet/manifests |& tee puppet_apply.log`
+   `puppet apply -d --modulepath="/opt/bigtop/bigtop-3.1.0/bigtop-deploy/puppet/modules:/etc/puppetlabs/code/modules/" /opt/bigtop/bigtop-3.1.0/bigtop-deploy/puppet/manifests |& tee puppet_apply.log`
 
 1. Apply httpd proxy config for zeppelin
 1. DO NOT OPEN THE FIREWALL TO ANTHING ELSE
@@ -80,7 +79,56 @@ pt/bigtop/bigtop-3.1.0/bigtop-deploy/puppet/manifests |& tee puppet_apply.log`
    ```pip3 install jupyter-client grpcio protobuf```
    And also install IRKernel via R and CRAN, then somehow convince the jupyter installation to use it correctly.
 
-1. Repeat on other nodes in your cluster as needed! 
+1. Shiro authentication enabled for Zeppelin via:
+
+   ```
+   cd /etc/zeppelin/conf
+   cp shiro.ini.template shiro.ini
+   ```
+   Edit shiro.ini to add class level users!
+
+## Worker Node Config
+1. Repeat on other nodes in your cluster as needed!?
 
    Except don't put *their* name in for the NAMENODE-FQDN. They should be added somewhere in...
    `site.yaml`, I suspect, but we haven't gotten that far yet.
+
+1. Sync /etc/hosts for sanity
+
+1. Enable PowerTools repo!
+
+1. Install OS-level deps:
+
+   ```
+      dnf install epel-release vim git strace lsof java ruby puppet \
+          wget whois nfs-utils bind-utils \
+          R-core-devel R-devel openblas-devel httpd python3 python3-devel 
+   ```
+
+1. Add /opt/bigtop mount to /etc/fstab
+
+   ```
+   mkdir -p /opt/bigtop
+   echo "<NAMENDE-FQDN>:/opt/bigtop    /opt/bigtop       nfs       defaults      0 0" > /etc/fstab
+   mount -a
+   ```
+
+1. Configure firewall as needed - internal net in trusted zone, public allow 22 only
+
+1. Grab site config from NAMENODE:
+
+   ```
+   #ON NAMENODE!
+   scp -r /etc/puppetlabs/puppet/hiera* WORKERNODE:/etc/puppetlabs/puppet
+   ``` <!-- end* -->
+
+1. Generate the necessary puppet modules via *gradle*
+
+   ```
+   cd /opt/bigtop/bigtop-3.1.0/
+   ./gradlew toolchain-puppetmodules
+   ```
+
+1. Puppet apply! (do this in /tmp to avoid a particular error)
+ 
+   `puppet apply -d --modulepath="/opt/bigtop/bigtop-3.1.0/bigtop-deploy/puppet/modules:/etc/puppetlabs/code/modules/" /opt/bigtop/bigtop-3.1.0/bigtop-deploy/puppet/manifests |& tee puppet_apply.log`
