@@ -63,3 +63,7 @@ pt/bigtop/bigtop-3.1.0/bigtop-deploy/puppet/manifests |& tee puppet_apply.log`
    ```pip3 install jupyter-client grpcio protobuf```
    And also install IRKernel via R and CRAN, then somehow convince the jupyter installation to use it correctly.
 
+1. Repeat on other nodes in your cluster as needed! 
+
+   Except don't put *their* name in for the NAMENODE-FQDN. They should be added somewhere in...
+   `site.yaml`, I suspect, but we haven't gotten that far yet.
