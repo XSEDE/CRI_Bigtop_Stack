@@ -213,4 +213,4 @@ ldapRealm.contextFactory.systemPassword = {SECRET_PASSWORD}
 
 ### Management Tools
 
-* Apache Directory Server was tested against the installation - successful
+* [Apache Directory Server](https://directory.apache.org/studio/) was tested against the installation - successful
