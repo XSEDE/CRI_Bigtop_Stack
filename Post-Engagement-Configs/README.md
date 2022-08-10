@@ -165,6 +165,10 @@ firewall-cmd --runtime-to-permanent
 
 ```
 
+### Python Script
+
+[Simple csv to LDAP upload script](python-script/README.md)
+
 
 ## Zeppelin Configuration
 
@@ -181,7 +185,30 @@ Defaulted to ldap only over configuration
 # username05 = {PASSWORD}
 
 ```
+### Current Configuration
 
+found in the - /etc/zeppelin/conf/shiro.ini file
+
+```
+### A sample for configuring LDAP Directory Realm
+
+ldapRealm = org.apache.zeppelin.realm.LdapGroupRealm
+## search base for ldap groups (only relevant for LdapGroupRealm):
+
+ldapRealm.contextFactory.environment[ldap.searchBase] = dc=juniata,dc=edu
+#dc=COMPANY,dc=COM
+
+ldapRealm.contextFactory.url = ldap://jc-hadoop.juniata.edu:389
+#ldap.test.com:389
+# Used 389 since it was on localhost  - use 636 for machines outside /32
+
+ldapRealm.userDnTemplate = uid={0},ou=People,o=juniata.edu,dc=juniata,dc=edu
+#uid={0},ou=Users,dc=COMPANY,dc=COM
+
+ldapRealm.contextFactory.authenticationMechanism = simple
+ldapRealm.contextFactory.systemUsername = cn=Manager,dc=juniata,dc=edu
+ldapRealm.contextFactory.systemPassword = {SECRET_PASSWORD}
+```
 
 
 ### Management Tools
