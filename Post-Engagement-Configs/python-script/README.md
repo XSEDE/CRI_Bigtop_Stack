@@ -1,5 +1,12 @@
 # Supporting Python Script
 
+## Dependencies
+```bash
+dnf install python3-ldap rubygem-net-ldap
+dnf install python3-pandas
+```
+
+### The script
 ```python
 import sys
 import ldap
